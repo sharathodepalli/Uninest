@@ -1,28 +1,33 @@
-import { Button } from '@/components/ui/button';
-import { ArrowRight } from 'lucide-react';
+import { Button } from "@/components/ui/button";
+import { ArrowRight } from "lucide-react";
 
 export function CTA() {
   return (
     <section className="py-20 bg-gradient-to-r from-primary to-blue-600 text-primary-foreground">
-      <div className="container text-center">
-        <div className="max-w-3xl mx-auto space-y-8">
+      <div className="w-full max-w-7xl mx-auto px-2 sm:px-4 md:px-8 text-center flex flex-col items-center">
+        <div className="max-w-3xl mx-auto space-y-8 w-full">
           <h2 className="text-3xl md:text-4xl font-bold">
             Ready to Find Your Perfect Student Housing?
           </h2>
           <p className="text-xl opacity-90">
-            Join thousands of students who have found their ideal home away from home. Start your search today!
+            Join thousands of students who have found their ideal home away from
+            home. Start your search today!
           </p>
-          
+
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button size="lg" variant="secondary" className="text-primary">
               Start Searching
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
-            <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-primary">
+            <Button
+              size="lg"
+              variant="outline"
+              className="border-white text-primary bg-white hover:bg-primary hover:text-white hover:border-white transition-colors"
+            >
               List Your Property
             </Button>
           </div>
-          
+
           <div className="flex flex-wrap justify-center gap-8 text-sm opacity-75">
             <span>✓ Free to Search</span>
             <span>✓ Verified Listings</span>

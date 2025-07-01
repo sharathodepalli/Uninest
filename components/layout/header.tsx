@@ -1,15 +1,28 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Home, Search, MessageCircle, User, LogOut, Menu, Plus } from 'lucide-react';
-import { useAuth } from '@/hooks/use-auth';
-import { toast } from 'sonner';
+import { useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  Home,
+  Search,
+  MessageCircle,
+  User,
+  LogOut,
+  Menu,
+  Plus,
+} from "lucide-react";
+import { useAuth } from "@/hooks/use-auth";
+import { toast } from "sonner";
 
 export function Header() {
   const [isOpen, setIsOpen] = useState(false);
@@ -19,28 +32,33 @@ export function Header() {
   const handleSignOut = async () => {
     const { error } = await signOut();
     if (error) {
-      toast.error('Error signing out');
+      toast.error("Error signing out");
     } else {
-      toast.success('Signed out successfully');
-      router.push('/');
+      toast.success("Signed out successfully");
+      router.push("/");
     }
   };
 
   const navigation = [
-    { name: 'Search', href: '/search', icon: Search },
-    { name: 'Messages', href: '/messages', icon: MessageCircle, requireAuth: true },
+    { name: "Search", href: "/search", icon: Search },
+    {
+      name: "Messages",
+      href: "/messages",
+      icon: MessageCircle,
+      requireAuth: true,
+    },
   ];
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-16 items-center justify-between">
-        <div className="flex items-center gap-6">
+      <div className="w-full max-w-7xl mx-auto px-2 sm:px-4 md:px-8 flex h-16 items-center justify-between">
+        <div className="flex items-center gap-4 sm:gap-6">
           <Link href="/" className="flex items-center space-x-2">
-            <Home className="h-6 w-6 text-primary" />
-            <span className="text-xl font-bold">UniNest</span>
+            <Home className="h-7 w-7 text-primary sm:h-8 sm:w-8" />
+            <span className="text-xl sm:text-2xl font-bold">UniNest</span>
           </Link>
 
-          <nav className="hidden md:flex items-center space-x-6">
+          <nav className="hidden md:flex items-center space-x-4 sm:space-x-6">
             {navigation.map((item) => {
               if (item.requireAuth && !user) return null;
               return (
@@ -57,12 +75,12 @@ export function Header() {
           </nav>
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2 sm:gap-4">
           {loading ? (
             <div className="h-8 w-8 animate-pulse bg-muted rounded-full" />
           ) : user ? (
             <div className="flex items-center gap-2">
-              {profile?.role === 'host' && (
+              {profile?.role === "host" && (
                 <Button asChild size="sm" className="hidden sm:flex">
                   <Link href="/listings/new">
                     <Plus className="h-4 w-4 mr-2" />
@@ -70,14 +88,20 @@ export function Header() {
                   </Link>
                 </Button>
               )}
-              
+
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+                  <Button
+                    variant="ghost"
+                    className="relative h-8 w-8 rounded-full"
+                  >
                     <Avatar className="h-8 w-8">
-                      <AvatarImage src={profile?.photo_url || ''} alt={profile?.name || ''} />
+                      <AvatarImage
+                        src={profile?.photo_url || ""}
+                        alt={profile?.name || ""}
+                      />
                       <AvatarFallback>
-                        {profile?.name?.charAt(0)?.toUpperCase() || 'U'}
+                        {profile?.name?.charAt(0)?.toUpperCase() || "U"}
                       </AvatarFallback>
                     </Avatar>
                   </Button>
@@ -89,7 +113,7 @@ export function Header() {
                       Profile
                     </Link>
                   </DropdownMenuItem>
-                  {profile?.role === 'host' && (
+                  {profile?.role === "host" && (
                     <DropdownMenuItem asChild>
                       <Link href="/dashboard" className="flex items-center">
                         <Home className="mr-2 h-4 w-4" />
@@ -122,7 +146,14 @@ export function Header() {
                 <Menu className="h-5 w-5" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="right">
+            <SheetContent side="right" className="w-4/5 max-w-xs p-6">
+              <button
+                className="absolute top-4 right-4 text-muted-foreground hover:text-foreground text-2xl"
+                onClick={() => setIsOpen(false)}
+                aria-label="Close menu"
+              >
+                &times;
+              </button>
               <div className="flex flex-col gap-4 mt-8">
                 {navigation.map((item) => {
                   if (item.requireAuth && !user) return null;
@@ -138,8 +169,8 @@ export function Header() {
                     </Link>
                   );
                 })}
-                
-                {user && profile?.role === 'host' && (
+
+                {user && profile?.role === "host" && (
                   <Link
                     href="/listings/new"
                     className="flex items-center gap-2 text-sm font-medium"
