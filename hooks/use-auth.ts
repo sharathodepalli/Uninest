@@ -71,17 +71,26 @@ export function useAuth() {
   };
 
   const signUp = async (email: string, password: string, name: string, role: 'host' | 'seeker') => {
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: {
-          name,
-          role,
+    try {
+      // Use the API route for signup to bypass the broken trigger
+      const response = await fetch('/api/auth/signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
         },
-      },
-    });
-    return { error };
+        body: JSON.stringify({ email, password, name, role }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        return { error: new Error(data.error || 'Signup failed') };
+      }
+
+      return { error: null };
+    } catch (err) {
+      return { error: err as Error };
+    }
   };
 
   const signOut = async () => {
