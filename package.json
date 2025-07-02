@@ -13,7 +13,8 @@
     "functions:deploy": "supabase functions deploy",
     "build:analyze": "ANALYZE=true npm run build",
     "netlify:build": "npm run build",
-    "netlify:dev": "netlify dev"
+    "netlify:dev": "netlify dev",
+    "postbuild": "echo 'Build completed successfully for Netlify deployment'"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
@@ -78,5 +79,9 @@
     "netlify-cli": "^22.2.1",
     "postcss": "^8.5.6",
     "tailwindcss": "3.3.3"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
   }
 }
