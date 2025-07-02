@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { supabase } from '@/lib/supabase';
-import { toast } from 'sonner';
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { supabase } from "@/lib/supabase";
+import { toast } from "sonner";
 
 export default function AuthCallbackPage() {
   const router = useRouter();
@@ -12,22 +12,23 @@ export default function AuthCallbackPage() {
     const handleAuthCallback = async () => {
       try {
         const { data, error } = await supabase.auth.getSession();
-        
+
         if (error) {
-          toast.error('Authentication failed');
-          router.push('/auth/signin');
+          toast.error("Authentication failed");
+          router.push("/auth/signin");
           return;
         }
 
         if (data.session) {
-          toast.success('Signed in successfully!');
-          router.push('/search');
+          toast.success("Signed in successfully!");
+          // Redirect to dashboard after successful OAuth
+          router.push("/dashboard");
         } else {
-          router.push('/auth/signin');
+          router.push("/auth/signin");
         }
       } catch (error) {
-        toast.error('An unexpected error occurred');
-        router.push('/auth/signin');
+        toast.error("An unexpected error occurred");
+        router.push("/auth/signin");
       }
     };
 

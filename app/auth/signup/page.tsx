@@ -1,30 +1,43 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Separator } from '@/components/ui/separator';
-import { Home, Mail, Lock, User, Github } from 'lucide-react';
-import { useAuth } from '@/hooks/use-auth';
-import { supabase } from '@/lib/supabase';
-import { toast } from 'sonner';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Separator } from "@/components/ui/separator";
+import { Home, Mail, Lock, User, Github } from "lucide-react";
+import { useAuth } from "@/hooks/use-auth";
+import { supabase } from "@/lib/supabase";
+import { toast } from "sonner";
 
 export default function SignUpPage() {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [role, setRole] = useState<'host' | 'seeker'>('seeker');
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [role, setRole] = useState<"host" | "seeker">("seeker");
   const [loading, setLoading] = useState(false);
   const { signUp } = useAuth();
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Client-side validation
+    if (password.length < 6) {
+      toast.error("Password must be at least 6 characters long");
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -32,11 +45,13 @@ export default function SignUpPage() {
       if (error) {
         toast.error(error.message);
       } else {
-        toast.success('Account created successfully! Please check your email for verification.');
-        router.push('/auth/signin');
+        toast.success(
+          "Account created successfully! Please check your email for verification."
+        );
+        router.push("/auth/signin");
       }
     } catch (error) {
-      toast.error('An unexpected error occurred');
+      toast.error("An unexpected error occurred");
     } finally {
       setLoading(false);
     }
@@ -45,28 +60,28 @@ export default function SignUpPage() {
   const handleGoogleSignIn = async () => {
     try {
       const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
+        provider: "google",
         options: {
           redirectTo: `${window.location.origin}/auth/callback`,
         },
       });
       if (error) toast.error(error.message);
     } catch (error) {
-      toast.error('An unexpected error occurred');
+      toast.error("An unexpected error occurred");
     }
   };
 
   const handleGitHubSignIn = async () => {
     try {
       const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'github',
+        provider: "github",
         options: {
           redirectTo: `${window.location.origin}/auth/callback`,
         },
       });
       if (error) toast.error(error.message);
     } catch (error) {
-      toast.error('An unexpected error occurred');
+      toast.error("An unexpected error occurred");
     }
   };
 
@@ -86,11 +101,19 @@ export default function SignUpPage() {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
-            <Button variant="outline" onClick={handleGoogleSignIn}>
+            <Button
+              variant="outline"
+              onClick={handleGoogleSignIn}
+              data-testid="google-signup-button"
+            >
               <Mail className="mr-2 h-4 w-4" />
               Google
             </Button>
-            <Button variant="outline" onClick={handleGitHubSignIn}>
+            <Button
+              variant="outline"
+              onClick={handleGitHubSignIn}
+              data-testid="github-signup-button"
+            >
               <Github className="mr-2 h-4 w-4" />
               GitHub
             </Button>
@@ -117,6 +140,7 @@ export default function SignUpPage() {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 required
+                data-testid="name-input"
               />
             </div>
             <div className="space-y-2">
@@ -128,6 +152,7 @@ export default function SignUpPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
+                data-testid="email-input"
               />
             </div>
             <div className="space-y-2">
@@ -140,22 +165,40 @@ export default function SignUpPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 minLength={6}
                 required
+                data-testid="password-input"
               />
             </div>
             <div className="space-y-3">
               <Label>I want to</Label>
-              <RadioGroup value={role} onValueChange={(value) => setRole(value as 'host' | 'seeker')}>
+              <RadioGroup
+                value={role}
+                onValueChange={(value) => setRole(value as "host" | "seeker")}
+                data-testid="role-selection"
+              >
                 <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="seeker" id="seeker" />
+                  <RadioGroupItem
+                    value="seeker"
+                    id="seeker"
+                    data-testid="seeker-role"
+                  />
                   <Label htmlFor="seeker">Find housing (Student)</Label>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="host" id="host" />
+                  <RadioGroupItem
+                    value="host"
+                    id="host"
+                    data-testid="host-role"
+                  />
                   <Label htmlFor="host">List my property (Host)</Label>
                 </div>
               </RadioGroup>
             </div>
-            <Button type="submit" className="w-full" disabled={loading}>
+            <Button
+              type="submit"
+              className="w-full"
+              disabled={loading}
+              data-testid="signup-button"
+            >
               {loading ? (
                 <>
                   <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-background border-t-transparent" />
@@ -171,7 +214,9 @@ export default function SignUpPage() {
           </form>
 
           <div className="text-center text-sm">
-            <span className="text-muted-foreground">Already have an account? </span>
+            <span className="text-muted-foreground">
+              Already have an account?{" "}
+            </span>
             <Link href="/auth/signin" className="text-primary hover:underline">
               Sign in
             </Link>

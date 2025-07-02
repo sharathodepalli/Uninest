@@ -36,7 +36,11 @@ export default function SignInPage() {
         toast.error(error.message);
       } else {
         toast.success("Signed in successfully!");
-        router.push("/search");
+
+        // Check for redirect parameter or default to dashboard
+        const urlParams = new URLSearchParams(window.location.search);
+        const redirectTo = urlParams.get("redirectTo") || "/dashboard";
+        router.push(redirectTo);
       }
     } catch (error) {
       toast.error("An unexpected error occurred");
@@ -89,11 +93,19 @@ export default function SignInPage() {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
-            <Button variant="outline" onClick={handleGoogleSignIn}>
+            <Button
+              variant="outline"
+              onClick={handleGoogleSignIn}
+              data-testid="google-signin-button"
+            >
               <Mail className="mr-2 h-4 w-4" />
               Google
             </Button>
-            <Button variant="outline" onClick={handleGitHubSignIn}>
+            <Button
+              variant="outline"
+              onClick={handleGitHubSignIn}
+              data-testid="github-signin-button"
+            >
               <Github className="mr-2 h-4 w-4" />
               GitHub
             </Button>
@@ -120,6 +132,7 @@ export default function SignInPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
+                data-testid="email-input"
               />
             </div>
             <div className="space-y-2">
@@ -131,9 +144,23 @@ export default function SignInPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
+                data-testid="password-input"
               />
+              <div className="text-right">
+                <Link
+                  href="/auth/forgot-password"
+                  className="text-sm text-primary hover:underline"
+                >
+                  Forgot password?
+                </Link>
+              </div>
             </div>
-            <Button type="submit" className="w-full" disabled={loading}>
+            <Button
+              type="submit"
+              className="w-full"
+              disabled={loading}
+              data-testid="signin-button"
+            >
               {loading ? (
                 <>
                   <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-background border-t-transparent" />
