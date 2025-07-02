@@ -1,27 +1,45 @@
-# Netlify UI Setting Fix for SSR Deployment
+# Netlify Deployment Fix for Next.js SSR
 
-## Issue
+## Common Build Error Scenarios
 
-Even with correct `netlify.toml` configuration, Netlify deployment fails because the dashboard UI has a "Publish directory" setting that overrides the config file.
-
-## Build Error Symptoms
+### Error 1: "Deployment folder not found"
 
 ```
 Error: Could not find the deployment folder "/opt/build/repo/out"
-```
-
-Build logs show:
-
-```
 publish: /opt/build/repo/out
 publishOrigin: ui
 ```
 
-The `publishOrigin: ui` indicates the setting comes from dashboard UI, not `netlify.toml`.
+**Cause:** Netlify UI has publish directory set to "out" (static export mode)
+**Fix:** Clear the "Publish directory" field in Netlify dashboard
+
+### Error 2: "Publish directory cannot be the same as base directory"
+
+```
+Error: Your publish directory cannot be the same as the base directory of your site
+publish: /opt/build/repo
+publishOrigin: default
+```
+
+**Cause:** No publish directory set, Netlify defaults to repository root
+**Fix:** Set publish directory to ".next" in netlify.toml
 
 ## Fix Steps
 
-### 1. Clear Netlify Dashboard Setting
+### 1. Update netlify.toml
+
+Ensure your `netlify.toml` has:
+
+```toml
+[build]
+  command = "npm run build"
+  publish = ".next"  # Required for @netlify/plugin-nextjs
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+```
+
+### 2. Clear Netlify Dashboard Setting (if needed)
 
 1. Go to [Netlify Dashboard](https://app.netlify.com)
 2. Select your UniNest site
