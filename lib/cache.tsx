@@ -1,6 +1,11 @@
+import React from "react";
+
 // Client-side caching utilities
 class CacheManager {
-  private cache = new Map<string, { data: any; timestamp: number; ttl: number }>();
+  private cache = new Map<
+    string,
+    { data: any; timestamp: number; ttl: number }
+  >();
   private static instance: CacheManager;
 
   static getInstance(): CacheManager {
@@ -21,13 +26,13 @@ class CacheManager {
 
   get(key: string): any | null {
     const item = this.cache.get(key);
-    
+
     if (!item) {
       return null;
     }
 
     const isExpired = Date.now() - item.timestamp > item.ttl;
-    
+
     if (isExpired) {
       this.cache.delete(key);
       return null;
@@ -43,11 +48,13 @@ class CacheManager {
     }
 
     const regex = new RegExp(pattern);
-    for (const key of this.cache.keys()) {
+    const keysToDelete: string[] = [];
+    this.cache.forEach((_, key) => {
       if (regex.test(key)) {
-        this.cache.delete(key);
+        keysToDelete.push(key);
       }
-    }
+    });
+    keysToDelete.forEach((key) => this.cache.delete(key));
   }
 
   // Cache with automatic refresh
@@ -57,7 +64,7 @@ class CacheManager {
     ttlMinutes: number = 5
   ): Promise<T> {
     const cached = this.get(key);
-    
+
     if (cached) {
       return cached;
     }
@@ -87,7 +94,7 @@ export function useCachedData<T>(
       try {
         setLoading(true);
         const result = await cache.getOrFetch(key, fetchFn, ttlMinutes);
-        
+
         if (mounted) {
           setData(result);
           setError(null);
@@ -108,7 +115,7 @@ export function useCachedData<T>(
     return () => {
       mounted = false;
     };
-  }, [key, ttlMinutes]);
+  }, [key, ttlMinutes, fetchFn]);
 
   const invalidate = () => {
     cache.invalidate(key);

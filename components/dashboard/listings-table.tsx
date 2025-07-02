@@ -1,97 +1,113 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Eye, Edit, MoreHorizontal, Trash2, MapPin } from 'lucide-react';
-import { supabase } from '@/lib/supabase';
-import { useAuth } from '@/hooks/use-auth';
-import { Database } from '@/lib/database.types';
-import { toast } from 'sonner';
-import Link from 'next/link';
+import { useState, useEffect, useCallback } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Eye, Edit, MoreHorizontal, Trash2, MapPin } from "lucide-react";
+import { supabase } from "@/lib/supabase";
+import { useAuth } from "@/hooks/use-auth";
+import { Database } from "@/lib/database.types";
+import { toast } from "sonner";
+import Link from "next/link";
 
-type Listing = Database['public']['Tables']['listings']['Row'];
+type Listing = Database["public"]["Tables"]["listings"]["Row"];
 
 export function ListingsTable() {
   const { user } = useAuth();
   const [listings, setListings] = useState<Listing[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    if (user) {
-      fetchListings();
-    }
-  }, [user]);
-
-  const fetchListings = async () => {
+  const fetchListings = useCallback(async () => {
     if (!user) return;
 
     try {
       const { data, error } = await supabase
-        .from('listings')
-        .select('*')
-        .eq('host_id', user.id)
-        .order('created_at', { ascending: false });
+        .from("listings")
+        .select("*")
+        .eq("host_id", user.id)
+        .order("created_at", { ascending: false });
 
       if (error) throw error;
       setListings(data || []);
     } catch (error) {
-      console.error('Error fetching listings:', error);
-      toast.error('Failed to load listings');
+      console.error("Error fetching listings:", error);
+      toast.error("Failed to load listings");
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
 
-  const updateListingStatus = async (id: string, status: 'active' | 'inactive') => {
+  useEffect(() => {
+    if (user) {
+      fetchListings();
+    }
+  }, [user, fetchListings]);
+
+  const updateListingStatus = async (
+    id: string,
+    status: "active" | "inactive"
+  ) => {
     try {
       const { error } = await supabase
-        .from('listings')
+        .from("listings")
         .update({ status })
-        .eq('id', id);
+        .eq("id", id);
 
       if (error) throw error;
 
-      setListings(prev => prev.map(listing => 
-        listing.id === id ? { ...listing, status } : listing
-      ));
+      setListings((prev) =>
+        prev.map((listing) =>
+          listing.id === id ? { ...listing, status } : listing
+        )
+      );
 
-      toast.success(`Listing ${status === 'active' ? 'activated' : 'deactivated'}`);
+      toast.success(
+        `Listing ${status === "active" ? "activated" : "deactivated"}`
+      );
     } catch (error) {
-      toast.error('Failed to update listing status');
+      toast.error("Failed to update listing status");
     }
   };
 
   const deleteListing = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this listing?')) return;
+    if (!confirm("Are you sure you want to delete this listing?")) return;
 
     try {
-      const { error } = await supabase
-        .from('listings')
-        .delete()
-        .eq('id', id);
+      const { error } = await supabase.from("listings").delete().eq("id", id);
 
       if (error) throw error;
 
-      setListings(prev => prev.filter(listing => listing.id !== id));
-      toast.success('Listing deleted');
+      setListings((prev) => prev.filter((listing) => listing.id !== id));
+      toast.success("Listing deleted");
     } catch (error) {
-      toast.error('Failed to delete listing');
+      toast.error("Failed to delete listing");
     }
   };
 
   const getStatusBadge = (status: string) => {
     switch (status) {
-      case 'active':
+      case "active":
         return <Badge className="bg-green-500">Active</Badge>;
-      case 'inactive':
+      case "inactive":
         return <Badge variant="secondary">Inactive</Badge>;
-      case 'pending':
+      case "pending":
         return <Badge variant="outline">Pending</Badge>;
-      case 'rented':
+      case "rented":
         return <Badge className="bg-blue-500">Rented</Badge>;
       default:
         return <Badge variant="secondary">{status}</Badge>;
@@ -123,7 +139,9 @@ export function ListingsTable() {
       <CardContent>
         {listings.length === 0 ? (
           <div className="text-center py-12">
-            <p className="text-muted-foreground mb-4">You haven't created any listings yet</p>
+            <p className="text-muted-foreground mb-4">
+              You haven&apos;t created any listings yet
+            </p>
             <Button asChild>
               <Link href="/listings/new">Create Your First Listing</Link>
             </Button>
@@ -147,7 +165,10 @@ export function ListingsTable() {
                   <TableCell>
                     <div className="flex items-center gap-3">
                       <img
-                        src={listing.photos_urls[0] || 'https://images.pexels.com/photos/106399/pexels-photo-106399.jpeg?auto=compress&cs=tinysrgb&w=100'}
+                        src={
+                          listing.photos_urls[0] ||
+                          "https://images.pexels.com/photos/106399/pexels-photo-106399.jpeg?auto=compress&cs=tinysrgb&w=100"
+                        }
                         alt={listing.title}
                         className="w-12 h-12 rounded object-cover"
                       />
@@ -162,15 +183,11 @@ export function ListingsTable() {
                   <TableCell>
                     <div className="flex items-center gap-1 text-sm text-muted-foreground">
                       <MapPin className="h-3 w-3" />
-                      {listing.address.split(',')[0]}
+                      {listing.address.split(",")[0]}
                     </div>
                   </TableCell>
-                  <TableCell className="font-medium">
-                    ${listing.rent}
-                  </TableCell>
-                  <TableCell>
-                    {getStatusBadge(listing.status)}
-                  </TableCell>
+                  <TableCell className="font-medium">${listing.rent}</TableCell>
+                  <TableCell>{getStatusBadge(listing.status)}</TableCell>
                   <TableCell>
                     <div className="flex items-center gap-1">
                       <Eye className="h-3 w-3" />
@@ -200,16 +217,24 @@ export function ListingsTable() {
                             Edit
                           </Link>
                         </DropdownMenuItem>
-                        {listing.status === 'active' ? (
-                          <DropdownMenuItem onClick={() => updateListingStatus(listing.id, 'inactive')}>
+                        {listing.status === "active" ? (
+                          <DropdownMenuItem
+                            onClick={() =>
+                              updateListingStatus(listing.id, "inactive")
+                            }
+                          >
                             Deactivate
                           </DropdownMenuItem>
                         ) : (
-                          <DropdownMenuItem onClick={() => updateListingStatus(listing.id, 'active')}>
+                          <DropdownMenuItem
+                            onClick={() =>
+                              updateListingStatus(listing.id, "active")
+                            }
+                          >
                             Activate
                           </DropdownMenuItem>
                         )}
-                        <DropdownMenuItem 
+                        <DropdownMenuItem
                           onClick={() => deleteListing(listing.id)}
                           className="text-destructive"
                         >

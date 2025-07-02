@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Home, Eye, MessageCircle, DollarSign } from 'lucide-react';
-import { supabase } from '@/lib/supabase';
-import { useAuth } from '@/hooks/use-auth';
+import { useState, useEffect, useCallback } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Home, Eye, MessageCircle, DollarSign } from "lucide-react";
+import { supabase } from "@/lib/supabase";
+import { useAuth } from "@/hooks/use-auth";
 
 interface Stats {
   totalListings: number;
@@ -25,38 +25,35 @@ export function DashboardStats() {
   });
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    if (user) {
-      fetchStats();
-    }
-  }, [user]);
-
-  const fetchStats = async () => {
+  const fetchStats = useCallback(async () => {
     if (!user) return;
 
     try {
       // Get listings stats
       const { data: listings } = await supabase
-        .from('listings')
-        .select('id, status, view_count, rent')
-        .eq('host_id', user.id);
+        .from("listings")
+        .select("id, status, view_count, rent")
+        .eq("host_id", user.id);
 
       // Get unread messages count
       const { data: messages } = await supabase
-        .from('messages')
-        .select('id')
-        .eq('receiver_id', user.id)
-        .is('read_at', null);
+        .from("messages")
+        .select("id")
+        .eq("receiver_id", user.id)
+        .is("read_at", null);
 
       const totalListings = listings?.length || 0;
-      const activeListings = listings?.filter(l => l.status === 'active').length || 0;
-      const totalViews = listings?.reduce((sum, l) => sum + l.view_count, 0) || 0;
+      const activeListings =
+        listings?.filter((l) => l.status === "active").length || 0;
+      const totalViews =
+        listings?.reduce((sum, l) => sum + l.view_count, 0) || 0;
       const unreadMessages = messages?.length || 0;
-      
+
       // Calculate potential monthly revenue from active listings
-      const monthlyRevenue = listings
-        ?.filter(l => l.status === 'active')
-        .reduce((sum, l) => sum + l.rent, 0) || 0;
+      const monthlyRevenue =
+        listings
+          ?.filter((l) => l.status === "active")
+          .reduce((sum, l) => sum + l.rent, 0) || 0;
 
       setStats({
         totalListings,
@@ -66,36 +63,42 @@ export function DashboardStats() {
         monthlyRevenue,
       });
     } catch (error) {
-      console.error('Error fetching stats:', error);
+      console.error("Error fetching stats:", error);
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
+
+  useEffect(() => {
+    if (user) {
+      fetchStats();
+    }
+  }, [user, fetchStats]);
 
   const statCards = [
     {
-      title: 'Total Listings',
+      title: "Total Listings",
       value: stats.totalListings,
       icon: Home,
       description: `${stats.activeListings} active`,
     },
     {
-      title: 'Total Views',
+      title: "Total Views",
       value: stats.totalViews,
       icon: Eye,
-      description: 'All time views',
+      description: "All time views",
     },
     {
-      title: 'Unread Messages',
+      title: "Unread Messages",
       value: stats.unreadMessages,
       icon: MessageCircle,
-      description: 'Pending responses',
+      description: "Pending responses",
     },
     {
-      title: 'Potential Revenue',
+      title: "Potential Revenue",
       value: `$${stats.monthlyRevenue.toLocaleString()}`,
       icon: DollarSign,
-      description: 'Monthly potential',
+      description: "Monthly potential",
     },
   ];
 

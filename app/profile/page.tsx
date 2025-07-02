@@ -1,14 +1,20 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { Header } from '@/components/layout/header';
-import { ProfileForm } from '@/components/profile/profile-form';
-import { ProfileStats } from '@/components/profile/profile-stats';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { User, Settings, Heart, MessageCircle } from 'lucide-react';
-import { useAuth } from '@/hooks/use-auth';
-import { useRouter } from 'next/navigation';
+import { useState } from "react";
+import { Header } from "@/components/layout/header";
+import { ProfileForm } from "@/components/profile/profile-form";
+import { ProfileStats } from "@/components/profile/profile-stats";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { User, Settings, Heart, MessageCircle } from "lucide-react";
+import { useAuth } from "@/hooks/use-auth";
+import { useRouter } from "next/navigation";
 
 export default function ProfilePage() {
   const { user, profile, loading } = useAuth();
@@ -29,14 +35,14 @@ export default function ProfilePage() {
   }
 
   if (!user) {
-    router.push('/auth/signin');
+    router.push("/auth/signin");
     return null;
   }
 
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      
+
       <div className="container py-6">
         <div className="max-w-4xl mx-auto">
           <div className="mb-8">
@@ -56,7 +62,10 @@ export default function ProfilePage() {
                 <MessageCircle className="h-4 w-4" />
                 Activity
               </TabsTrigger>
-              <TabsTrigger value="favorites" className="flex items-center gap-2">
+              <TabsTrigger
+                value="favorites"
+                className="flex items-center gap-2"
+              >
                 <Heart className="h-4 w-4" />
                 Favorites
               </TabsTrigger>
@@ -79,7 +88,7 @@ export default function ProfilePage() {
                 <CardHeader>
                   <CardTitle>Favorite Listings</CardTitle>
                   <CardDescription>
-                    Properties you've saved for later
+                    Properties you&apos;ve saved for later
                   </CardDescription>
                 </CardHeader>
                 <CardContent>

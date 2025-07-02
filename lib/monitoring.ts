@@ -45,19 +45,3 @@ export class PerformanceMonitor {
     // analytics.track(type, { name, value, metadata });
   }
 }
-
-// Error boundary for React components
-export function withErrorBoundary<T extends object>(
-  Component: React.ComponentType<T>
-): React.ComponentType<T> {
-  return function ErrorBoundaryWrapper(props: T) {
-    const monitor = PerformanceMonitor.getInstance();
-    
-    try {
-      return <Component {...props} />;
-    } catch (error) {
-      monitor.trackError(error as Error, Component.name);
-      throw error;
-    }
-  };
-}
