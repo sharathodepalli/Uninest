@@ -1,0 +1,1 @@
+{"status":"ok","message":"OAuth test endpoint","session":"none","providers":{"google":"configured","github":"configured"},"supabaseUrl":"https://your-project-ref.supabase.co","redirectUrl":"http://localhost:3001/auth/callback"}

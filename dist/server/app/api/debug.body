@@ -1,0 +1,1 @@
+{"status":"ok","message":"Diagnostic check completed","data":{"timestamp":"2025-07-03T00:40:49.569Z","environment":"production","supabaseUrl":"SET","supabaseAnonKey":"SET","supabaseServiceKey":"SET","siteUrl":"http://localhost:3001","runtime":"node"}}
